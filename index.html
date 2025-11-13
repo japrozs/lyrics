@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>lyrics</title>
+        <style>
+            @import url("https://rsms.me/inter/inter.css");
+            @import url("https://fonts.cdnfonts.com/css/sf-pro-display");
+
+            body {
+                background: radial-gradient(
+                    circle at center,
+                    #0a0000 0%,
+                    #000 100%
+                );
+                color: #777;
+                font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont,
+                    "Helvetica Neue", sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                height: 100vh;
+                justify-content: center;
+                overflow: hidden;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+
+            audio {
+                margin-top: 1rem;
+                opacity: 0.85;
+            }
+
+            .lyrics {
+                text-align: center;
+                line-height: 1.25;
+                font-size: 2rem;
+                height: 80vh;
+                overflow: hidden;
+                position: relative;
+                font-weight: 600;
+                width: 100%;
+                padding: 20px;
+                scroll-behavior: smooth;
+                will-change: transform;
+            }
+
+            .line {
+                transition: color 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                    filter 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                    text-shadow 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+                color: #2c1b1b;
+                opacity: 0.35;
+                filter: blur(3px);
+                transform: translateZ(0);
+                margin: 0.6em 0;
+                padding: 0px 10px;
+            }
+
+            /* active lyric — bright red with rich shadow */
+            .active {
+                color: oklch(78% 0.26 25);
+                transform: scale(1.08) translateZ(0);
+                opacity: 1;
+                filter: blur(0);
+                text-shadow: 0 0 12px rgba(100, 0, 0, 0.8),
+                    0 0 24px rgba(70, 0, 0, 0.7), 0 0 48px rgba(40, 0, 0, 0.6);
+            }
+
+            /* subtle fade layers for context lines */
+            .nearby {
+                opacity: 0.6;
+                filter: blur(3px);
+            }
+
+            .lyrics::-webkit-scrollbar {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <audio id="audio" controls src="fina.mp3"></audio>
+        <div class="lyrics" id="lyrics"></div>
+
+        <script>
+            const lyricsData = `
+[00:13.52]Ey
+[00:14.37]
+[00:21.07]Miko, ey
+[00:23.57]Miko, ey
+[00:26.14]Miko, brr
+[00:27.90]It's baby Miko
+[00:29.09]
+[00:29.47]Tu mirada es profunda y la mía penetrante
+[00:32.56]Yo siento que te conozco de antes
+[00:34.84]Me dijo que nunca había estao con un cantante
+[00:37.23]Nada, no te creo, que se joda
+[00:39.01]
+[00:39.01]Mami, voy pa' adentro, flow Curbelo
+[00:41.31]Ey, pa' que te vengas rápido no necesito LELO
+[00:44.78]En to's mis videos te pusieron de modelo, mmm
+[00:47.56]Dame booty, dame cara, dame pelo, wow
+[00:50.64]
+[00:50.64]Ella no es puta, ella es mujer alegre
+[00:52.71]Fina, pero le gusta la' calle' 'e PR
+[00:55.25]Diva, se tira hombre' y también mujere'
+[00:57.60]E' mía cuando me pide que la grabe, pues dale
+[01:00.53]
+[01:00.53]Me gustan las bichi y las yales kinkies, salvaje'
+[01:03.67]Tímida, pero no cuando me pide que baje
+[01:06.39]Vamo' pa' LALA remix, te quité lo de timi'
+[01:08.99]Me dejó el número 'el teléfono en el Dr. Simi
+[01:11.59]
+[01:11.59]Yo vo' a ser tu baby mother como YOVNGCHIMI
+[01:14.06]Es del West, bizcochita, está Ricomini
+[01:16.59]I know you wanna see me
+[01:17.76]Eso no es na', déjate ver, ¿te va' a hacer? Si
+[01:20.92]
+[01:20.38]Oye
+[01:20.87]
+[01:20.87]Si las más putas son las más finas
+[01:23.41]Si las más putas son las más finas
+[01:25.96]Si las más putas son las más finas
+[01:28.53]Si las más putas son las más finas
+[01:30.58]
+[01:30.58]Digan lo que diga, vamo' a gozarno' la vida
+[01:33.60]Di-di-di-di
+[01:35.70]Digan lo que diga, vamo' a gozarno' la vida
+[01:38.63]
+[01:38.87]Ey, ey
+[01:39.49]
+[01:40.13]Me gustan las suciería', baby, how about you?
+[01:42.66]Tengo el bicho afeitao y cabezón como Caillou
+[01:45.23]Besitos en el cuello, besitos en el toto
+[01:47.80]No sé que tú me hiciste, mami, que me tienes loco
+[01:50.30]
+[01:50.30]Dale, vamos pa' la Gucci pa' hacerlo en el probador
+[01:53.35]De espaldita y a la vez el vibrador
+[01:55.24]"El polvito en la mañana" le digo al despertador
+[01:58.25]To' el mundo habla, pero están de espectador
+[02:00.69]
+[01:59.73]Ey, ey
+[02:00.83]
+[02:00.92]Se preguntan cómo nos comunicamos
+[02:03.40]Ey, mejor ni les contamos
+[02:06.05]Dile que de una conectamos
+[02:08.42]Je, y que chingando nos matamo'
+[02:10.52]
+[02:10.52]Que yo soy un bellaco, pero tú me ganas
+[02:13.20]Bien arrebatao', chingando en casa de tu hermana
+[02:15.77]Yo soy tu Bambino, tú eres mi Villana
+[02:18.29]Vamo' a hacerlo hoy porque nadie sabe lo que va a pasar mañana
+[02:22.32]
+[02:23.67]Ey, por la forma en que me chinga a veces pienso que me ama
+[02:27.41]Ey, la baby tiene cuarto', tiene lo de ella, hace lo que le da la gana
+[02:32.47]Je, mami, hoy voy a enseñarte cómo es que un culo se mama, je-je
+[02:37.84]Ven acá, ven aquí, ven, ponte en cuatro, dale
+[02:40.19]
+[02:40.69]Oye, esto e' pa' toa' las bebesotas del mundo entero
+[02:45.57]Que están bien ricas, que tienen lo de ella'
+[02:48.03]Y que viven como les salga de lo', de lo' ovarios, de los cojones, donde sea
+[02:53.85]Vamo' to' el mundo a putearlo, que se joda
+[02:56.06]De parte del Conejo y young Miko
+[02:58.56]Dime algo, mami, ¿qué fue?
+[03:00.20]
+[03:00.20]Ey, mami, sé tú y que se joda y que se joda
+[03:06.18]Háblale de ticket, no le hable' de boda, no
+[03:09.89]No le hable' de boda
+[03:11.30]Mami, sé tú y que se joda y que se joda
+[03:16.27]Háblale de ticket, no le hable' de boda, no
+[03:19.94]No le hable' de boda
+[03:22.26]
+[03:23.02]Ay
+[03:24.99]Dime
+[03:26.89]Mera, tú sabes que a nosotros nos importa un bicho lo que ustedes piensan
+[03:30.21]Y ya, ah, OK
+[03:33.85]'Tato'
+[03:34.49]
+`; // keep your full lyrics
+
+            const lyricsContainer = document.getElementById("lyrics");
+            const audio = document.getElementById("audio");
+
+            const lyrics = lyricsData
+                .trim()
+                .split("\n")
+                .map((line) => {
+                    const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
+                    if (!match) return null;
+                    const [, m, s, text] = match;
+                    return {
+                        time: parseFloat(m) * 60 + parseFloat(s),
+                        text: text.trim(),
+                    };
+                })
+                .filter(Boolean);
+
+            lyrics.forEach((l) => {
+                const div = document.createElement("div");
+                div.className = "line";
+                div.textContent = l.text || " ";
+                lyricsContainer.appendChild(div);
+            });
+
+            const lines = Array.from(document.querySelectorAll(".line"));
+            let lastIndex = -1;
+            const anticipation = 0.1; // slightly ahead
+
+            audio.addEventListener("timeupdate", () => {
+                const currentTime = audio.currentTime + anticipation;
+                const currentIndex = lyrics.findIndex(
+                    (l, i) =>
+                        currentTime >= l.time &&
+                        (i === lyrics.length - 1 ||
+                            currentTime < lyrics[i + 1].time)
+                );
+
+                if (currentIndex !== lastIndex && currentIndex >= 0) {
+                    lastIndex = currentIndex;
+
+                    lines.forEach((line, i) => {
+                        line.classList.remove("active", "nearby");
+
+                        if (i === currentIndex) {
+                            line.classList.add("active");
+                        } else if (Math.abs(i - currentIndex) === 1) {
+                            line.classList.add("nearby");
+                        }
+                    });
+
+                    const target =
+                        lines[currentIndex].offsetTop -
+                        lyricsContainer.clientHeight / 2 +
+                        lines[currentIndex].clientHeight / 2;
+
+                    const start = lyricsContainer.scrollTop;
+                    const distance = target - start;
+                    const duration = 600;
+                    const startTime = performance.now();
+
+                    function smoothScroll(time) {
+                        const progress = Math.min(
+                            (time - startTime) / duration,
+                            1
+                        );
+                        const ease = 1 - Math.pow(1 - progress, 3);
+                        lyricsContainer.scrollTop = start + distance * ease;
+                        if (progress < 1) requestAnimationFrame(smoothScroll);
+                    }
+                    requestAnimationFrame(smoothScroll);
+                }
+            });
+        </script>
+    </body>
+</html>
